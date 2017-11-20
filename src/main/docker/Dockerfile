@@ -1,5 +1,5 @@
 FROM java:8
-ADD enelia-dashboard-api.war app.jar
+ADD enelia-dashboard-api.jar app.jar
 ADD wrapper.sh wrapper.sh
 RUN bash -c 'chmod +x /wrapper.sh'
 RUN bash -c 'touch /app.jar'
