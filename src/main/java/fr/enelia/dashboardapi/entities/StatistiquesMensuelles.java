@@ -1,12 +1,10 @@
 package fr.enelia.dashboardapi.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name="statistiques_mensuelles")
 public class StatistiquesMensuelles implements Serializable {
 
     @Id

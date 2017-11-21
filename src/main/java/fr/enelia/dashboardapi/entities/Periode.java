@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name="periode")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",

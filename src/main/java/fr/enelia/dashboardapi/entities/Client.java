@@ -1,13 +1,11 @@
 package fr.enelia.dashboardapi.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@Table(name="client")
 public class Client implements Serializable {
 
     @Id

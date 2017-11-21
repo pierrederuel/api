@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
+@Table(name="role")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",

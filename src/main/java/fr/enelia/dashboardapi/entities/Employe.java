@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@Table(name="employe")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 /*@JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
