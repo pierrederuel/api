@@ -46,14 +46,14 @@ create table oauth_code (
 );
 
 drop table if exists oauth_approvals;
-create table oauth_approvals (
-    userId VARCHAR(255),
-    clientId VARCHAR(255),
-    scope VARCHAR(255),
-    status VARCHAR(10),
-    expiresAt TIMESTAMP,
-    lastModifiedAt TIMESTAMP
-);
+CREATE TABLE `oauth_approvals` (
+  `userId` varchar(255) DEFAULT NULL,
+  `clientId` varchar(255) DEFAULT NULL,
+  `scope` varchar(255) DEFAULT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `expiresAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `lastModifiedAt` timestamp NOT NULL DEFAULT '1970-01-01 00:00:01'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 drop table if exists ClientDetails;
 create table ClientDetails (

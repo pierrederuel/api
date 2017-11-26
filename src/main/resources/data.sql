@@ -19,7 +19,7 @@ INSERT INTO `agence` (`id`, `logo`, `nom`) VALUES
 
 INSERT INTO `employe` (`dtype`, `id`, `nom`, `photo`, `prenom`, `agence_id`) VALUES
 ('Manager', 1, 'Deschaume', 'img/avatar/1.jpg', 'Arnaud', 1),
-('Commercialw   ', 2, 'Hamedi', 'img/avatar/11.jpg', 'Sophiane', 1),
+('Commercial', 2, 'Hamedi', 'img/avatar/11.jpg', 'Sophiane', 1),
 ('Manager', 3, 'Legrand', 'img/avatar/12.jpg', 'Sylvain', 1),
 ('Manager', 4, 'Moisson', 'img/avatar/13.jpg', 'Pauline', 1),
 ('Prospecteur', 5, 'Schryve', 'img/avatar/13.jpg', 'Thibaut', 1),

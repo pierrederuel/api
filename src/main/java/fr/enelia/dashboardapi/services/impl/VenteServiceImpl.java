@@ -81,17 +81,19 @@ public class VenteServiceImpl implements VenteService {
         Vente resultVente = venteRepository.save(vente.getVente());
 
         //On gère les stats pour le prospecteur
-        statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(resultVente.getProspecteur().getId(), periodeService.getLatestPeriode());
-        statistiquesMensuelles.setCaTotal(statistiquesMensuelles.getCaTotal() + resultVente.getMontantTotal());
-        statistiquesMensuelles.setCaReel(statistiquesMensuelles.getCaReel() + resultVente.getMontantTotal());
-        statistiquesMensuelles.setNbVentes(statistiquesMensuelles.getNbVentes()+1);
-        statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+        if (resultVente.getProspecteur() != null && resultVente.getProspecteur().getId() != 0) {
+            statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(resultVente.getProspecteur().getId(), periodeService.getLatestPeriode());
+            statistiquesMensuelles.setCaTotal(statistiquesMensuelles.getCaTotal() + resultVente.getMontantTotal());
+            statistiquesMensuelles.setCaReel(statistiquesMensuelles.getCaReel() + resultVente.getMontantTotal());
+            statistiquesMensuelles.setNbVentes(statistiquesMensuelles.getNbVentes() + 1);
+            statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
 
-        statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(resultVente.getProspecteur().getId(), periodeService.getLatestPeriode());
-        statistiquesAnnuelles.setCaTotal(statistiquesAnnuelles.getCaTotal() + resultVente.getMontantTotal());
-        statistiquesAnnuelles.setCaReel(statistiquesAnnuelles.getCaReel() + resultVente.getMontantTotal());
-        statistiquesAnnuelles.setNbVentes(statistiquesAnnuelles.getNbVentes()+1);
-        statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(resultVente.getProspecteur().getId(), periodeService.getLatestPeriode());
+            statistiquesAnnuelles.setCaTotal(statistiquesAnnuelles.getCaTotal() + resultVente.getMontantTotal());
+            statistiquesAnnuelles.setCaReel(statistiquesAnnuelles.getCaReel() + resultVente.getMontantTotal());
+            statistiquesAnnuelles.setNbVentes(statistiquesAnnuelles.getNbVentes() + 1);
+            statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+        }
 
         return resultVente;
     }
@@ -113,13 +115,15 @@ public class VenteServiceImpl implements VenteService {
             current.setDateAssise(LocalDate.now());
             //Prospecteur
             //Gestion des stats mensuelles
-            StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
-            statistiquesMensuelles.setNbAssises(statistiquesMensuelles.getNbAssises() + 1);
-            statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
-            //Gestion des stats annuelles
-            StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
-            statistiquesAnnuelles.setNbAssises(statistiquesAnnuelles.getNbAssises() + 1);
-            statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            if (current.getProspecteur() != null) {
+                StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                statistiquesMensuelles.setNbAssises(statistiquesMensuelles.getNbAssises() + 1);
+                statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+                //Gestion des stats annuelles
+                StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                statistiquesAnnuelles.setNbAssises(statistiquesAnnuelles.getNbAssises() + 1);
+                statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            }
             //Commerciaux
             Iterator<Commission> itCommissions = current.getCommisions().iterator();
             while (itCommissions.hasNext()) {
@@ -141,17 +145,22 @@ public class VenteServiceImpl implements VenteService {
     public Vente updateVenteManager(Vente vente) {
         LOGGER.info("updateVenteManager");
         Vente current = getVenteById(vente.getId());
-        StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
-        StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
 
         if (!current.isAssise() && vente.isAssise()) {
             current.setAssise(vente.isAssise());
             current.setDateAssise(LocalDate.now());
             //Prospecteur
             //Gestion des stats mensuelles
-            statistiquesMensuelles.setNbAssises(statistiquesMensuelles.getNbAssises() + 1);
-            //Gestion des stats annuelles
-            statistiquesAnnuelles.setNbAssises(statistiquesAnnuelles.getNbAssises() + 1);
+            if (current.getProspecteur() != null) {
+                StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+
+                statistiquesMensuelles.setNbAssises(statistiquesMensuelles.getNbAssises() + 1);
+                //Gestion des stats annuelles
+                statistiquesAnnuelles.setNbAssises(statistiquesAnnuelles.getNbAssises() + 1);
+                statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+                statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            }
             //Commerciaux
             Iterator<Commission> itCommissions = current.getCommisions().iterator();
             while (itCommissions.hasNext()) {
@@ -170,9 +179,16 @@ public class VenteServiceImpl implements VenteService {
             current.setDateEcoHabitant(LocalDate.now());
             //Prospecteur
             //Gestion des stats mensuelles
-            statistiquesMensuelles.setEcoHabitant(statistiquesMensuelles.getEcoHabitant() + 1);
-            //Gestion des stats annuelles
-            statistiquesAnnuelles.setEcoHabitant(statistiquesAnnuelles.getEcoHabitant() + 1);
+            if (current.getProspecteur() != null) {
+                StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+
+                statistiquesMensuelles.setEcoHabitant(statistiquesMensuelles.getEcoHabitant() + 1);
+                //Gestion des stats annuelles
+                statistiquesAnnuelles.setEcoHabitant(statistiquesAnnuelles.getEcoHabitant() + 1);
+                statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+                statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            }
             //Commerciaux
             Iterator<Commission> itCommissions = current.getCommisions().iterator();
             while (itCommissions.hasNext()) {
@@ -191,9 +207,16 @@ public class VenteServiceImpl implements VenteService {
             current.setDateVisiteTechnique(LocalDate.now());
             //Prospecteur
             //Gestion des stats mensuelles
-            statistiquesMensuelles.setVisiteTechnique(statistiquesMensuelles.getVisiteTechnique() + 1);
-            //Gestion des stats annuelles
-            statistiquesAnnuelles.setVisiteTechnique(statistiquesAnnuelles.getVisiteTechnique() + 1);
+            if (current.getProspecteur() != null) {
+                StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+
+                statistiquesMensuelles.setVisiteTechnique(statistiquesMensuelles.getVisiteTechnique() + 1);
+                //Gestion des stats annuelles
+                statistiquesAnnuelles.setVisiteTechnique(statistiquesAnnuelles.getVisiteTechnique() + 1);
+                statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+                statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            }
             //Commerciaux
             Iterator<Commission> itCommissions = current.getCommisions().iterator();
             while (itCommissions.hasNext()) {
@@ -212,9 +235,16 @@ public class VenteServiceImpl implements VenteService {
             current.setDateFinanacement(LocalDate.now());
             //Prospecteur
             //Gestion des stats mensuelles
-            statistiquesMensuelles.setNbFinancement(statistiquesMensuelles.getNbFinancement() + 1);
-            //Gestion des stats annuelles
-            statistiquesAnnuelles.setNbFinancement(statistiquesAnnuelles.getNbFinancement() + 1);
+            if (current.getProspecteur() != null) {
+                StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+                StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(current.getProspecteur().getId(), current.getPeriode());
+
+                statistiquesMensuelles.setNbFinancement(statistiquesMensuelles.getNbFinancement() + 1);
+                //Gestion des stats annuelles
+                statistiquesAnnuelles.setNbFinancement(statistiquesAnnuelles.getNbFinancement() + 1);
+                statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+                statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+            }
             //Commerciaux
             Iterator<Commission> itCommissions = current.getCommisions().iterator();
             while (itCommissions.hasNext()) {
@@ -229,8 +259,7 @@ public class VenteServiceImpl implements VenteService {
 
         }
 
-        statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
-        statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+
         vente = updateVente(current);
         return vente;
     }
@@ -296,20 +325,21 @@ public class VenteServiceImpl implements VenteService {
 
         //Gestion du prospecteur
         //Gestion du resultat
-        Resultat resultat = resultatService.getResultatByProspecteurAndPeriode(result.getProspecteur(), result.getPeriode());
-        resultat.setMontantVendu(resultat.getMontantVendu() - result.getMontantTotal());
-        resultatService.updateResultat(resultat);
-        //Gestion des stats mensuelles
-        StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(result.getProspecteur().getId(), result.getPeriode());
-        statistiquesMensuelles.setCaReel(statistiquesMensuelles.getCaReel() - result.getMontantTotal());
-        statistiquesMensuelles.setNbAnnulationClient(statistiquesMensuelles.getNbAnnulationClient() + 1);
-        statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
-        //Gestion des stats annuelles
-        StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(result.getProspecteur().getId(), result.getPeriode());
-        statistiquesAnnuelles.setCaReel(statistiquesAnnuelles.getCaReel() - result.getMontantTotal());
-        statistiquesAnnuelles.setNbAnnulationClient(statistiquesAnnuelles.getNbAnnulationClient() + 1);
-        statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
-
+        if (result.getProspecteur() != null) {
+            Resultat resultat = resultatService.getResultatByProspecteurAndPeriode(result.getProspecteur(), result.getPeriode());
+            resultat.setMontantVendu(resultat.getMontantVendu() - result.getMontantTotal());
+            resultatService.updateResultat(resultat);
+            //Gestion des stats mensuelles
+            StatistiquesMensuelles statistiquesMensuelles = statistiquesMensuellesService.getStatistiquesMensuellesByUserIdAndPeriode(result.getProspecteur().getId(), result.getPeriode());
+            statistiquesMensuelles.setCaReel(statistiquesMensuelles.getCaReel() - result.getMontantTotal());
+            statistiquesMensuelles.setNbAnnulationClient(statistiquesMensuelles.getNbAnnulationClient() + 1);
+            statistiquesMensuellesService.updateStatistiquesMensuelles(statistiquesMensuelles);
+            //Gestion des stats annuelles
+            StatistiquesAnnuelles statistiquesAnnuelles = statistiquesAnnuellesService.getStatistiquesAnnuellesByUserIdAndPeriode(result.getProspecteur().getId(), result.getPeriode());
+            statistiquesAnnuelles.setCaReel(statistiquesAnnuelles.getCaReel() - result.getMontantTotal());
+            statistiquesAnnuelles.setNbAnnulationClient(statistiquesAnnuelles.getNbAnnulationClient() + 1);
+            statistiquesAnnuellesService.updateStatistiquesAnnuelles(statistiquesAnnuelles);
+        }
 
         return this.updateVente(result);
     }

@@ -15,7 +15,7 @@ public class Vente implements Serializable {
     private Long id;
     @OneToMany(mappedBy = "vente", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Commission> commisions;
-    @OneToOne
+    @OneToOne(optional = true)
     private Prospecteur prospecteur;
     private String client;
     private long montantTotal;

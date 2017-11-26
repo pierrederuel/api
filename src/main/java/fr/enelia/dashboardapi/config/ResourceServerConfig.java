@@ -14,7 +14,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.authorizeRequests().antMatchers("/oauth/token/**").permitAll()
                 .antMatchers("/init-data").permitAll()
                 .antMatchers("/init-new-periode").permitAll()
-                .antMatchers("/resultats-tv").permitAll()
+                /*.antMatchers("/resultats-tv").permitAll()
+                .antMatchers("/employes").permitAll()
+                .antMatchers("/employe-stats/**").permitAll()
+                .antMatchers("/update-photo").permitAll()*/
                 .antMatchers("/tokens").permitAll()
                 .antMatchers("/send-notification").permitAll()
                 .antMatchers("/tokens/**").permitAll()

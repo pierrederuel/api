@@ -42,12 +42,18 @@ public class VenteController {
         LOGGER.error(vente.getVente().getClient());
         StringBuilder messageBody = new StringBuilder("Vente de ");
         //On créé la vente et les commissions associées à chaque commercial
+        //On vérifie la vente ne contient pas de prospecteur (commercial ayant prospecté seul)
+        if (vente.getVente().getProspecteur().getId() == 0) {
+            vente.getVente().setProspecteur(null);
+        }
         Vente resultVente = venteService.createVente(vente);
         messageBody.append(resultVente.getMontantTotal());
         messageBody.append(" € realisee par ");
-        messageBody.append(resultVente.getProspecteur().getPrenom());
-        messageBody.append(" ");
-        messageBody.append(resultVente.getProspecteur().getNom());
+        if (resultVente.getProspecteur() != null) {
+            messageBody.append(resultVente.getProspecteur().getPrenom());
+            messageBody.append(" ");
+            messageBody.append(resultVente.getProspecteur().getNom());
+        }
         //On met à jour les résultats en fonction de la vente
         resultatService.addVenteToResultat(resultVente);
         //On supprime la redondance entre vente et commission pour éviter une boucle infinie lors de la serialisation
@@ -60,6 +66,8 @@ public class VenteController {
             messageBody.append(" ");
             messageBody.append(currentCommission.getCommercial().getNom());
         }
+        messageBody.append(" chez Mr/Mme ");
+        messageBody.append(resultVente.getClient());
         //On envoie une notification à l'ensemble des utilisateurs actifs
         Iterable<Utilisateur> users = utilisateurService.getUtilisateursActifs();
         data.put("type", "vente");
@@ -71,13 +79,19 @@ public class VenteController {
     @PutMapping("vente-employe")
     public Vente updateVenteEmploye(@RequestBody Vente vente) {
         JSONObject data = new JSONObject();
-        StringBuilder messageBody = new StringBuilder("Vente de ");
+        StringBuilder messageBody = new StringBuilder();
+        if (vente.isAssise()) {
+            messageBody.append("Assise effectuee");
+        }
         vente = venteService.updateVenteEmploye(vente);
+        messageBody.append(" sur la vente de ");
         messageBody.append(vente.getMontantTotal());
         messageBody.append(" € realisee par ");
-        messageBody.append(vente.getProspecteur().getPrenom());
-        messageBody.append(" ");
-        messageBody.append(vente.getProspecteur().getNom());
+        if (vente.getProspecteur() != null) {
+            messageBody.append(vente.getProspecteur().getPrenom());
+            messageBody.append(" ");
+            messageBody.append(vente.getProspecteur().getNom());
+        }
         Iterator<Commission> itCommissions = vente.getCommisions().iterator();
         while (itCommissions.hasNext()) {
             Commission currentCommission = itCommissions.next();
@@ -87,6 +101,8 @@ public class VenteController {
             messageBody.append(" ");
             messageBody.append(currentCommission.getCommercial().getNom());
         }
+        messageBody.append(" chez Mr/Mme ");
+        messageBody.append(vente.getClient());
         //On envoie une notification à l'ensemble des utilisateurs actifs
         Iterable<Utilisateur> users = utilisateurService.getUtilisateursActifs();
         data.put("type", "statut");
@@ -99,13 +115,25 @@ public class VenteController {
     @PutMapping("vente-manager")
     public Vente updateVenteManager(@RequestBody Vente vente) {
         JSONObject data = new JSONObject();
-        StringBuilder messageBody = new StringBuilder("Vente de ");
+        StringBuilder messageBody = new StringBuilder();
         vente = venteService.updateVenteManager(vente);
+        if (vente.isFinancement()) {
+            messageBody.append("Financement obtenu ");
+        } else if (vente.isVisiteTechnique()) {
+            messageBody.append("Visite technique effectuee");
+        } else if (vente.isEcoHabitant()) {
+            messageBody.append("Eco Habitant effectue");
+        } else if (vente.isAssise()) {
+            messageBody.append("Assise effectuee");
+        }
+        messageBody.append(" sur la vente de ");
         messageBody.append(vente.getMontantTotal());
         messageBody.append(" € realisee par ");
-        messageBody.append(vente.getProspecteur().getPrenom());
-        messageBody.append(" ");
-        messageBody.append(vente.getProspecteur().getNom());
+        if (vente.getProspecteur() != null) {
+            messageBody.append(vente.getProspecteur().getPrenom());
+            messageBody.append(" ");
+            messageBody.append(vente.getProspecteur().getNom());
+        }
         Iterator<Commission> itCommissions = vente.getCommisions().iterator();
         while (itCommissions.hasNext()) {
             Commission currentCommission = itCommissions.next();
@@ -115,6 +143,8 @@ public class VenteController {
             messageBody.append(" ");
             messageBody.append(currentCommission.getCommercial().getNom());
         }
+        messageBody.append(" chez Mr/Mme ");
+        messageBody.append(vente.getClient());
         //On envoie une notification à l'ensemble des utilisateurs actifs
         Iterable<Utilisateur> users = utilisateurService.getUtilisateursActifs();
         data.put("type", "statut");
@@ -208,9 +238,11 @@ public class VenteController {
         Vente result = venteService.cancelVente(vente);
         messageBody.append(result.getMontantTotal());
         messageBody.append(" € realisee par ");
-        messageBody.append(result.getProspecteur().getPrenom());
-        messageBody.append(" ");
-        messageBody.append(result.getProspecteur().getNom());
+        if (vente.getProspecteur() != null) {
+            messageBody.append(result.getProspecteur().getPrenom());
+            messageBody.append(" ");
+            messageBody.append(result.getProspecteur().getNom());
+        }
         Iterator<Commission> itCommissions = result.getCommisions().iterator();
         while (itCommissions.hasNext()) {
             Commission currentCommission = itCommissions.next();
@@ -220,6 +252,8 @@ public class VenteController {
             messageBody.append(" ");
             messageBody.append(currentCommission.getCommercial().getNom());
         }
+        messageBody.append(" chez Mr/Mme ");
+        messageBody.append(result.getClient());
         //On envoie une notification à l'ensemble des utilisateurs actifs
         Iterable<Utilisateur> users = utilisateurService.getUtilisateursActifs();
 

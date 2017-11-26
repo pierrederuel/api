@@ -49,9 +49,11 @@ public class ResultatServiceImpl implements ResultatService {
         }
         //Ajout de la vente au prospecteur
         Prospecteur currentProspecteur = vente.getProspecteur();
-        Resultat currentResultat = resultatRepository.findResultatByProspecteurAndPeriode(currentProspecteur, currentPeriode);
-        currentResultat.setMontantVendu(currentResultat.getMontantVendu() + vente.getMontantTotal());
-        this.updateResultat(currentResultat);
+        if (currentProspecteur != null) {
+            Resultat currentResultat = resultatRepository.findResultatByProspecteurAndPeriode(currentProspecteur, currentPeriode);
+            currentResultat.setMontantVendu(currentResultat.getMontantVendu() + vente.getMontantTotal());
+            this.updateResultat(currentResultat);
+        }
     }
 
     @Override
