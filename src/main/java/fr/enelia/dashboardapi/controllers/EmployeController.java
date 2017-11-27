@@ -69,7 +69,7 @@ public class EmployeController {
     @PutMapping(value = "update-photo")
     public EmployeStats updatePhoto(@RequestBody GestionEmploye employe) {
         Employe temp = employeService.getEmployeById(employe.getId());
-        temp.setPhoto("https://enelia.ddns.net/new/img/users/" + employe.getPhoto());
+        temp.setPhoto("https://enelia.ddns.net/img/users/" + employe.getPhoto());
         temp = employeService.updateEmploye(temp);
 
         EmployeStats result = null;
